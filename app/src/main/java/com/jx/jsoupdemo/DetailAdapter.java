@@ -11,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.jx.jsoupdemo.htmltext.HtmlText;
 
 import java.util.List;
 
@@ -37,7 +38,9 @@ public class DetailAdapter extends RecyclerView.Adapter<DetailAdapter.ViewHolder
         holder.tv_name.setText(bean.getName());
         holder.tv_time.setText(bean.getTime());
 
-        holder.tv_content.setText(Html.fromHtml(bean.getContent(), new URLImageParser(holder.tv_content, mContext), null));
+        HtmlText.from(bean.getContent()).setImageLoader(mContext, holder.tv_content).into(holder.tv_content);
+
+//        holder.tv_content.setText(Html.fromHtml(bean.getContent(), new URLImageParser(holder.tv_content, mContext), null));
     }
 
     @Override
