@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
+import com.jx.jsoupdemo.ImageActivity;
 import com.jx.jsoupdemo.R;
 import com.jx.jsoupdemo.htmltext.span.ImageClickSpan;
 import com.jx.jsoupdemo.htmltext.span.LinkClickSpan;
@@ -160,8 +161,7 @@ public class HtmlText {
             imageClickSpan.setListener(new OnTagClickListener() {
                 @Override
                 public void onImageClick(Context context, List<String> imageUrlList, int position) {
-//                    LogUtils.e("点击查看大图--" + position);
-//                    context.startActivity(BigImageActivity.getIntent(context, imageUrlList, position));
+                    ImageActivity.start(context, imageUrlList.get(position));
                 }
 
                 @Override

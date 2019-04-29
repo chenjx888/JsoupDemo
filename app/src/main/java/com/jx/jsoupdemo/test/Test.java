@@ -1,4 +1,4 @@
-package com.jx.jsoupdemo;
+package com.jx.jsoupdemo.test;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

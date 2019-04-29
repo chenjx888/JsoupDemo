@@ -1,4 +1,4 @@
-package com.jx.jsoupdemo;
+package com.jx.jsoupdemo.test;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -20,12 +20,12 @@ public class Test2 {
             public void run() {
                 Document doc = null;
                 try {
-                    doc = Jsoup.connect("https://www.52pojie.cn/thread-845252-1-1.html").get();
+                    doc = Jsoup.connect("https://www.52pojie.cn/thread-943148-1-3.html").get();
 //                    doc = Jsoup.connect("https://www.52pojie.cn/thread-941815-1-1.html").get();
 
-//                    Elements elements = doc.select("div.t_fsz");//每层楼的回复内容
-                    Elements elements = doc.select("div.alert_info");//要求权限
-//                    Elements elements = doc.select("table").select("td.t_f");//每层楼的回复内容
+//                    Elements elements = doc.select("div.rwdn");//每层楼的回复内容
+//                    Elements elements = doc.select("div.alert_info");//要求权限
+                    Elements elements = doc.select("table").select("td.t_f");//每层楼的回复内容
 //                    Elements elements = doc.select("div.authi").select("em");//每层楼的回复时间
 
 //                    Elements elements = doc.select("td[rowspan]").select("div.avatar").select("img");//头像列表

@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Menu;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -36,6 +37,8 @@ public class DetailActivity extends AppCompatActivity {
 
     private List<DetailBean> mData;
 
+    private Document doc = null;
+
     public static void start(Context context, String url) {
         context.startActivity(new Intent(context, DetailActivity.class).putExtra("url", url));
     }
@@ -44,6 +47,8 @@ public class DetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.mipmap.back);
         rv = findViewById(R.id.rv);
         tv_permission = findViewById(R.id.tv_permission);
         progressBar = findViewById(R.id.progressBar);
@@ -59,9 +64,14 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                Document doc = null;
                 try {
                     doc = Jsoup.connect(url).get();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            getSupportActionBar().setTitle(doc.title());
+                        }
+                    });
 
                     List<Map<String, String>> names = getNameAvatar(doc);
                     List<String> contents = getContent(doc);
@@ -70,6 +80,7 @@ public class DetailActivity extends AppCompatActivity {
                         mData.add(new DetailBean(names.get(i).get("name"), names.get(i).get("avatar"), times.get(i), contents.get(i)));
                     }
 
+                    //需要登录权限
                     if (mData.size() == 0) {
                         runOnUiThread(new Runnable() {
                             @Override
@@ -90,9 +101,16 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     });
 
-                } catch (IOException e) {
-                    Toast.makeText(DetailActivity.this, "解析错误", Toast.LENGTH_SHORT).show();
+                } catch (final IOException e) {
                     e.printStackTrace();
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setVisibility(View.GONE);
+                            tv_permission.setText("解析错误");
+                            Toast.makeText(DetailActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
             }
         }).start();
@@ -127,6 +145,7 @@ public class DetailActivity extends AppCompatActivity {
         for (Element element : elements) {
             //删除图片附带的多余div
             elements.select("div.tip").remove();
+            elements.select("p.mbn").remove();
             //替换img标签内的src属性为file
             Elements imgElements = element.getElementsByTag("img");
 
@@ -153,5 +172,4 @@ public class DetailActivity extends AppCompatActivity {
         }
         return data;
     }
-
 }

@@ -4,8 +4,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +24,7 @@ import java.util.List;
 
 public class PlateFragment extends Fragment {
 
+    private SwipeRefreshLayout swipeRefreshLayout;
     private RecyclerView rv;
     private ProgressBar progressBar;
     private TitleAdapter mAdapter;
@@ -46,9 +49,25 @@ public class PlateFragment extends Fragment {
 
         mData = new ArrayList<>();
         rv = view.findViewById(R.id.rv);
+        swipeRefreshLayout = view.findViewById(R.id.swipeRefreshLayout);
         progressBar = view.findViewById(R.id.progressBar);
         mAdapter = new TitleAdapter(getActivity(), mData);
         rv.setAdapter(mAdapter);
+
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                Log.e("TAG", "下拉刷新");
+                getData();
+            }
+        });
+
+        getData();
+
+        return view;
+    }
+
+    private void getData() {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -57,7 +76,8 @@ public class PlateFragment extends Fragment {
                     doc = Jsoup.connect(url).get();
                     Elements links = doc.select("tbody");
 
-//                    int count = 0;
+                    mData.clear();
+
                     for (Element element : links) {
                         //每条数据
                         Elements byLinks = element.select("td.by");
@@ -77,7 +97,6 @@ public class PlateFragment extends Fragment {
                         if (TextUtils.isEmpty(title)) continue;
 
                         mData.add(new TitleBean(title, author, time, replayCount, lookCount, plate, url));
-//                        count += 1;
                     }
 
                     getActivity().runOnUiThread(new Runnable() {
@@ -85,17 +104,16 @@ public class PlateFragment extends Fragment {
                         public void run() {
                             progressBar.setVisibility(View.GONE);
                             mAdapter.notifyDataSetChanged();
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     });
-//                    Log.e("TAG","count = " + count);
 
                 } catch (IOException e) {
                     e.printStackTrace();
+                    swipeRefreshLayout.setRefreshing(false);
                 }
             }
         }).start();
-
-        return view;
     }
 
     private String getLabelText(Elements links, String select) {
